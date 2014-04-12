@@ -28,6 +28,7 @@
     var fb_new_chat_room = fb_instance.child('chatrooms').child(fb_chat_room_id);
     var fb_instance_users = fb_new_chat_room.child('users');
     var fb_instance_stream = fb_new_chat_room.child('stream');
+    var fb_instance_requests = fb_new_chat_room.child('requests');
     var my_color = "#"+((1<<24)*Math.random()|0).toString(16);
 
     // listen to events
@@ -37,9 +38,12 @@
     fb_instance_stream.on("child_added",function(snapshot){
       display_msg(snapshot.val());
     });
+    fb_instance_requests.on("child_added",function(snapshot){
+      check_request(snapshot.val());
+    });
 
     // block until username is answered
-    var username = window.prompt("Welcome, warrior! Please declare your name:");
+    username = window.prompt("Welcome, warrior! Please declare your name:");
     if(!username){
       username = "anonymous"+Math.floor(Math.random()*1111);
     }
@@ -49,14 +53,17 @@
     // bind submission box
     $("#submission input").keydown(function( event ) {
       if (event.which == 13) {
-        if(has_emotions($(this).val())){
-          fb_instance_stream.push({m:username+": " +$(this).val(), v:cur_video_blob, c: my_color});
-        }else{
-          fb_instance_stream.push({m:username+": " +$(this).val(), c: my_color});
-        }
+        fb_instance_stream.push({m:username+": " +$(this).val(), c: my_color});
         $(this).val("");
         scroll_to_bottom(0);
       }
+    });
+
+    $("#reactionBtn").click(function(event) {
+      fb_instance_stream.push({m:username+": " +$("#submission input").val(), c: my_color});
+      $("#submission input").val("");
+      scroll_to_bottom(0);
+      fb_instance_requests.push({ name: username, color: my_color });
     });
 
     // scroll to bottom in case there is already content
@@ -85,6 +92,15 @@
       // video.src = URL.createObjectURL(base64_to_blob(data.v));
 
       document.getElementById("conversation").appendChild(video);
+    }
+  }
+
+  // checks for a new reaction request and sends out the reaction, if appropriate
+  function check_request(data){
+    $("#conversation").append("<div class='msg' style='color:"+data.c+"'>" + data.user + " has requested reactions!" + "</div>");
+
+    if (data.user != username) {
+      fb_instance_stream.push({m:username+": " +$(this).val(), v:cur_video_blob, c: my_color});
     }
   }
 
