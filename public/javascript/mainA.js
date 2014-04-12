@@ -1,6 +1,8 @@
 // Initial code by Borui Wang, updated by Graham Roth
 // For CS247, Spring 2014
 
+var username = null;
+
 (function() {
 
   var cur_video_blob = null;
