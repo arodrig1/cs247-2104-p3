@@ -24,7 +24,7 @@ var username = null;
     }else{
       fb_chat_room_id = Math.random().toString(36).substring(7);
     }
-    display_msg({m:"Share this url with your friend to join this chat: "+ document.location.origin+"/#"+fb_chat_room_id,c:"red"})
+    display_msg({m:"Share this url with your friend to join this chat: "+ document.location.origin +"/versionA" + "/#" + fb_chat_room_id,c:"red"})
 
     // set up variables to access firebase data structure
     var fb_new_chat_room = fb_instance.child('chatrooms').child(fb_chat_room_id);
@@ -99,7 +99,7 @@ var username = null;
 
   // checks for a new reaction request and sends out the reaction, if appropriate
   function check_request(data){
-    $("#conversation").append("<div class='msg' style='color:"+data.c+"'>" + data.user + " has requested reactions!" + "</div>");
+    $("#conversation").append("<div class='msg' style='color:"+data.color+"'>" + data.name + " has requested reactions!" + "</div>");
 
     if (data.user != username) {
       fb_instance_stream.push({m:username+": " +$(this).val(), v:cur_video_blob, c: my_color});
