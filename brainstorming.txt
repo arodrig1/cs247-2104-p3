@@ -1,0 +1,15 @@
+automatically start recording when user sees message
+emotion detection and automatic recording
+record while they're typing to see what face they're making
+record before they start typing
+set what end of video should look like, user tries to get there
+give users example to immitate
+video altering to exaggerate emotion
+merge video with emojis
+allow other user to see sneak peek every 30s
+other user demands to see face
+randomly reveal cam every so often
+short, short, short snippet every time user hits space
+stitch together three 1-sec videos to replace entire message
+charades to have user guess what you typed
+read my lips
