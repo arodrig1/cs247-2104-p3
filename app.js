@@ -24,7 +24,8 @@ if (app.get('env') === 'development') {
 
 
 // view engine setup
-app.engine('handlebars', exphbs({defaultLayout: 'main'}));
+//app.engine('handlebars', exphbs({defaultLayout: 'main'}));
+app.engine('handlebars', exphbs());
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'handlebars');
 
@@ -39,6 +40,8 @@ app.use(app.router);
 
 // Declare your routes here
 app.get('/', routes.index);
+app.get('/versionA', routes.versionA);
+app.get('/versionB', routes.versionB);
 
 /// catch 404 and forwarding to error handler
 app.use(function(req, res, next) {
