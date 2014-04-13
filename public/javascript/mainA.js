@@ -67,7 +67,7 @@
     });
 
     $("#reactionBtn").click(function(event) {
-      fb_instance_stream.push({m:username+": " +$("#submission input").val(), c: my_color});
+      fb_instance_stream.push({ m: username + ": " + $("#submission input").val(), c: my_color});
       $("#submission input").val("");
       scroll_to_bottom(0);
       fb_instance_requests.push({ name: username, color: my_color });
@@ -107,7 +107,7 @@
     $("#conversation").append("<div class='msg' style='color:"+data.color+"'>" + data.name + " has requested reactions!" + "</div>");
 
     if (data.name != username) {
-      fb_instance_stream.push({m:username+": " +$(this).val(), v:cur_video_blob, c: my_color});
+      fb_instance_stream.push({ m: username + ": ", v: cur_video_blob, c: my_color});
     }
   }
 
