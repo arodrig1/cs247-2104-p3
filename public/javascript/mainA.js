@@ -106,7 +106,7 @@
   function check_request(data){
     $("#conversation").append("<div class='msg' style='color:"+data.color+"'>" + data.name + " has requested reactions!" + "</div>");
 
-    if (data.user != username) {
+    if (data.name != username) {
       fb_instance_stream.push({m:username+": " +$(this).val(), v:cur_video_blob, c: my_color});
     }
   }
