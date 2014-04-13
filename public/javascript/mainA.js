@@ -1,12 +1,17 @@
 // Initial code by Borui Wang, updated by Graham Roth
 // For CS247, Spring 2014
 
-var username = null;
-
 (function() {
 
   var cur_video_blob = null;
   var fb_instance;
+  var username = null;
+  var fb_chat_room_id = null;
+  var fb_new_chat_room;
+  var fb_instance_users;
+  var fb_instance_stream;
+  var fb_instance_requests;
+  var my_color;
 
   $(document).ready(function(){
     connect_to_chat_firebase();
@@ -27,11 +32,11 @@ var username = null;
     display_msg({m:"Share this url with your friend to join this chat: "+ document.location.origin +"/versionA" + "#" + fb_chat_room_id,c:"red"})
 
     // set up variables to access firebase data structure
-    var fb_new_chat_room = fb_instance.child('chatrooms').child(fb_chat_room_id);
-    var fb_instance_users = fb_new_chat_room.child('users');
-    var fb_instance_stream = fb_new_chat_room.child('stream');
-    var fb_instance_requests = fb_new_chat_room.child('requests');
-    var my_color = "#"+((1<<24)*Math.random()|0).toString(16);
+    fb_new_chat_room = fb_instance.child('chatrooms').child(fb_chat_room_id);
+    fb_instance_users = fb_new_chat_room.child('users');
+    fb_instance_stream = fb_new_chat_room.child('stream');
+    fb_instance_requests = fb_new_chat_room.child('requests');
+    my_color = "#"+((1<<24)*Math.random()|0).toString(16);
 
     // listen to events
     fb_instance_users.on("child_added",function(snapshot){
