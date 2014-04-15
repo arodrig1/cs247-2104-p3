@@ -12,6 +12,7 @@
   var fb_instance_stream;
   var fb_instance_requests;
   var my_color;
+  var mediaRecorder;
 
   var VID_DELAY = 1000;
 
@@ -148,7 +149,7 @@
       webcam_stream.appendChild(video);
 
       var video_container = document.getElementById('video_container');
-      var mediaRecorder = new MediaStreamRecorder(stream);
+      mediaRecorder = new MediaStreamRecorder(stream);
       var index = 1;
 
       mediaRecorder.mimeType = 'video/webm';

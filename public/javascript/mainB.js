@@ -18,6 +18,7 @@
   var fb_instance_users;
   var fb_instance_stream;
   var my_color;
+  var mediaRecorder;
 
   $(document).ready(function(){
     connect_to_chat_firebase();
