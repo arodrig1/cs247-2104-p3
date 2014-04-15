@@ -3,21 +3,31 @@
 
 (function() {
 
+  var BAR_MIN = 0;
+  var BAR_MAX = 100;
+  var BAR_STEP = 8;
+  var VID_MAX = 3000;
+  var REC_KEY = 220;
+
   var cur_video_blob = null;
   var fb_instance;
-  var mediaRecorder;
-  var progressTimerId = 0;
+  var username = null;
+  var fb_chat_room_id = null;
+  var fb_new_chat_room;
+  var fb_instance_users;
+  var fb_instance_stream;
+  var my_color;
 
   $(document).ready(function(){
     connect_to_chat_firebase();
     connect_webcam();
     $("#progressbar").progressbar({ 
-      value: 0,
-      max: 1000,
+      value: BAR_MIN,
+      max: BAR_MAX,
       complete: function(event, ui) {
         console.log("Bar complete!");
         $(this).progressbar("value", false);
-        mediaRecorder.start(3000);
+        mediaRecorder.start(VID_MAX);
       }
     });
   });
@@ -33,13 +43,13 @@
     }else{
       fb_chat_room_id = Math.random().toString(36).substring(7);
     }
-    display_msg({m:"Share this url with your friend to join this chat: "+ document.location.origin + "#" + fb_chat_room_id, c: "red"});
+    display_msg({m:"Share this url with your friend to join this chat: "+ document.location.origin +"/versionB" + "#" + fb_chat_room_id,c:"red"})
 
     // set up variables to access firebase data structure
-    var fb_new_chat_room = fb_instance.child('chatrooms').child(fb_chat_room_id);
-    var fb_instance_users = fb_new_chat_room.child('users');
-    var fb_instance_stream = fb_new_chat_room.child('stream');
-    var my_color = "#"+((1<<24)*Math.random()|0).toString(16);
+    fb_new_chat_room = fb_instance.child('chatrooms').child(fb_chat_room_id);
+    fb_instance_users = fb_new_chat_room.child('users');
+    fb_instance_stream = fb_new_chat_room.child('stream');
+    my_color = "#"+((1<<24)*Math.random()|0).toString(16);
 
     // listen to events
     fb_instance_users.on("child_added",function(snapshot){
@@ -50,7 +60,7 @@
     });
 
     // block until username is answered
-    var username = window.prompt("Welcome, warrior! Please declare your name:");
+    username = window.prompt("Welcome, warrior! Please declare your name:");
     if(!username){
       username = "anonymous"+Math.floor(Math.random()*1111);
     }
@@ -66,20 +76,20 @@
         scroll_to_bottom(0);
       }
       // '\'' key
-      if (event.which == 220) {
+      if (event.which == REC_KEY) {
         event.preventDefault();
         var val = $("#progressbar").progressbar("value");
-        if ((val !== false) && (val < 1000)) $("#progressbar").progressbar("value", val + 60);
+        if ((val !== false) && (val < BAR_MAX)) $("#progressbar").progressbar("value", val + BAR_STEP);
       }
     });
 
     $("#submission input").keyup(function(event) {
       // '\'' key
       //console.log("KeyUP!");
-      if (event.which == 220) {
+      if (event.which == REC_KEY) {
         var val = $("#progressbar").progressbar("value");
-        if (val < 1000) {
-          $("#progressbar").progressbar("value", 0);
+        if (val < BAR_MAX) {
+          $("#progressbar").progressbar("value", BAR_MIN);
         } else {
           mediaRecorder.stop();
         }
@@ -119,7 +129,7 @@
     // scroll to bottom of div
     setTimeout(function(){
       $("html, body").animate({ scrollTop: $(document).height() }, 200);
-    },wait_time);
+    }, wait_time);
   }
 
   function connect_webcam(){
@@ -172,6 +182,8 @@
           blob_to_base64(blob,function(b64_data){
             cur_video_blob = b64_data;
           });
+
+          fb_instance_stream.push({ m: username + ": " + $("#submission input").val(), v: cur_video_blob, c: my_color});
       };
 
       console.log("Connected to media stream!");
