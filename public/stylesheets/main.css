@@ -28,7 +28,6 @@ a {
 #conversation {
   padding: 10px 10px 80px;
   overflow-y: scroll;
-  /*height: 80%;*/
 }
 #submission {
   position: fixed;
@@ -59,5 +58,12 @@ a {
   padding: 50px 0;
 }
 #progressbar, #recordbar {
+  position: fixed;
+  bottom: 45px;
+  right: 30px;
   height: 10px;
+  width: 1000px;
+}
+#recordbar .ui-progressbar-value {
+  color: #FF0000;
 }

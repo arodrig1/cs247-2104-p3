@@ -5,7 +5,7 @@
 
   var BAR_MIN = 0;
   var BAR_MAX = 100;
-  var BAR_START_STEP = 25;
+  //var BAR_START_STEP = 25;
   var BAR_RECORD_STEP = 1;
   var VID_MAX = 10000;
   var REC_KEY = 220;
@@ -22,7 +22,7 @@
   $(document).ready(function(){
     connect_to_chat_firebase();
     connect_webcam();
-    $("#progressbar").progressbar({ 
+    /*$("#progressbar").progressbar({ 
       value: BAR_MIN,
       max: BAR_MAX,
       complete: function(event, ui) {
@@ -31,18 +31,19 @@
         $(this).hide();
         $("#recordbar").show();        
       }
-    });
+    });*/
     $("#recordbar").progressbar({ 
       value: BAR_MIN,
       max: BAR_MAX,
       complete: function(event, ui) {
         mediaRecorder.stop();
-        $(this).hide();
-        $("#progressbar").progressbar("value", BAR_MIN);
-        $("#progressbar").show();        
+        $(this).progressbar("value", BAR_MIN);
+        //$(this).hide();
+        //$("#progressbar").progressbar("value", BAR_MIN);
+        //$("#progressbar").show();        
       }
     });
-    $("#recordbar").hide();
+    //$("#recordbar").hide();
   });
 
   function connect_to_chat_firebase(){
@@ -94,9 +95,10 @@
       // '\'' key
       } else if (event.which == REC_KEY) {
         event.preventDefault();
-        var startVal = $("#progressbar").progressbar("value");
+        //var startVal = $("#progressbar").progressbar("value");
         var recVal = $("#recordbar").progressbar("value");
-        if (startVal < BAR_MAX) $("#progressbar").progressbar("value", startVal + BAR_START_STEP);
+        //if (startVal < BAR_MAX) $("#progressbar").progressbar("value", startVal + BAR_START_STEP);
+        if (recVal == 0) mediaRecorder.start(VID_MAX);
         if (recVal < BAR_MAX) $("#recordbar").progressbar("value", recVal + BAR_RECORD_STEP);
       }
     });
@@ -105,15 +107,16 @@
       // '\'' key
       //console.log("KeyUP!");
       if (event.which == REC_KEY) {
-        var startVal = $("#progressbar").progressbar("value");
+        //var startVal = $("#progressbar").progressbar("value");
         var recVal = $("#recordbar").progressbar("value");
-        if (startVal < BAR_MAX) $("#progressbar").progressbar("value", BAR_MIN);
-        if (recVal > 0) {
+        //if (startVal < BAR_MAX) $("#progressbar").progressbar("value", BAR_MIN);
+        if (recVal > 0 && recVal < BAR_MAX) {
           mediaRecorder.stop();
-          $("#recordbar").hide();
+          $("#recordbar").progressbar("value", BAR_MIN);
+          /*$("#recordbar").hide();
           $("#progressbar").progressbar("value", BAR_MIN);
           $("#progressbar").show();
-          $("#recordbar").progressbar("value", BAR_MIN);
+          $("#recordbar").progressbar("value", BAR_MIN);*/
         }
       }
     });
