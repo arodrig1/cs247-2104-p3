@@ -50,7 +50,7 @@
     $("#submission input").keydown(function( event ) {
       if (event.which == 13) {
         if(has_emotions($(this).val())){
-          fb_instance_stream.push({m:username+": " +$(this).val(), v:cur_video_blob, c: my_color});
+          fb_instance_stream.push({ m: username + ": " + $(this).val(), v: cur_video_blob, c: my_color});
         }else{
           fb_instance_stream.push({m:username+": " +$(this).val(), c: my_color});
         }

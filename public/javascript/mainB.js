@@ -5,10 +5,21 @@
 
   var cur_video_blob = null;
   var fb_instance;
+  var mediaRecorder;
+  var progressTimerId = 0;
 
   $(document).ready(function(){
     connect_to_chat_firebase();
     connect_webcam();
+    $("#progressbar").progressbar({ 
+      value: 0,
+      max: 1000,
+      complete: function(event, ui) {
+        console.log("Bar complete!");
+        $(this).progressbar("value", false);
+        mediaRecorder.start(3000);
+      }
+    });
   });
 
   function connect_to_chat_firebase(){
@@ -16,13 +27,13 @@
     fb_instance = new Firebase("https://resplendent-fire-793.firebaseio.com");
 
     // generate new chatroom id or use existing id
-    var url_segments = document.location.href.split("/#");
+    var url_segments = document.location.href.split("#");
     if(url_segments[1]){
       fb_chat_room_id = url_segments[1];
     }else{
       fb_chat_room_id = Math.random().toString(36).substring(7);
     }
-    display_msg({m:"Share this url with your friend to join this chat: "+ document.location.origin+"/#"+fb_chat_room_id,c:"red"})
+    display_msg({m:"Share this url with your friend to join this chat: "+ document.location.origin + "#" + fb_chat_room_id, c: "red"});
 
     // set up variables to access firebase data structure
     var fb_new_chat_room = fb_instance.child('chatrooms').child(fb_chat_room_id);
@@ -48,14 +59,30 @@
 
     // bind submission box
     $("#submission input").keydown(function( event ) {
+      //console.log("KeyDOWN!");
       if (event.which == 13) {
-        if(has_emotions($(this).val())){
-          fb_instance_stream.push({m:username+": " +$(this).val(), v:cur_video_blob, c: my_color});
-        }else{
-          fb_instance_stream.push({m:username+": " +$(this).val(), c: my_color});
-        }
+        fb_instance_stream.push({m:username+": " +$(this).val(), c: my_color});
         $(this).val("");
         scroll_to_bottom(0);
+      }
+      // '\'' key
+      if (event.which == 220) {
+        event.preventDefault();
+        var val = $("#progressbar").progressbar("value");
+        if ((val !== false) && (val < 1000)) $("#progressbar").progressbar("value", val + 60);
+      }
+    });
+
+    $("#submission input").keyup(function(event) {
+      // '\'' key
+      //console.log("KeyUP!");
+      if (event.which == 220) {
+        var val = $("#progressbar").progressbar("value");
+        if (val < 1000) {
+          $("#progressbar").progressbar("value", 0);
+        } else {
+          mediaRecorder.stop();
+        }
       }
     });
 
@@ -125,11 +152,11 @@
       var second_counter = document.getElementById('second_counter');
       var second_counter_update = setInterval(function(){
         second_counter.innerHTML = time++;
-      },1000);
+      }, 1000);
 
       // now record stream in 5 seconds interval
       var video_container = document.getElementById('video_container');
-      var mediaRecorder = new MediaStreamRecorder(stream);
+      mediaRecorder = new MediaStreamRecorder(stream);
       var index = 1;
 
       mediaRecorder.mimeType = 'video/webm';
@@ -139,7 +166,6 @@
       mediaRecorder.video_height = video_height/2;
 
       mediaRecorder.ondataavailable = function (blob) {
-          //console.log("new data available!");
           video_container.innerHTML = "";
 
           // convert data into base 64 blocks
@@ -147,11 +173,8 @@
             cur_video_blob = b64_data;
           });
       };
-      setInterval( function() {
-        mediaRecorder.stop();
-        mediaRecorder.start(3000);
-      }, 3000 );
-      console.log("connect to media stream!");
+
+      console.log("Connected to media stream!");
     }
 
     // callback if there is an error when we try and get the video stream
