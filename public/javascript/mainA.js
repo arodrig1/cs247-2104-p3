@@ -15,6 +15,7 @@
   var mediaRecorder;
 
   var VID_DELAY = 1000;
+  var VID_DURATION = 3000;
 
   $(document).ready(function(){
     connect_to_chat_firebase();
