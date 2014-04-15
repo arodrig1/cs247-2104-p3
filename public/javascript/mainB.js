@@ -5,8 +5,9 @@
 
   var BAR_MIN = 0;
   var BAR_MAX = 100;
-  var BAR_STEP = 8;
-  var VID_MAX = 3000;
+  var BAR_START_STEP = 25;
+  var BAR_RECORD_STEP = 1;
+  var VID_MAX = 10000;
   var REC_KEY = 220;
 
   var cur_video_blob = null;
@@ -25,11 +26,22 @@
       value: BAR_MIN,
       max: BAR_MAX,
       complete: function(event, ui) {
-        console.log("Bar complete!");
-        $(this).progressbar("value", false);
         mediaRecorder.start(VID_MAX);
+        $(this).hide();
+        $("#recordbar").show();        
       }
     });
+    $("#recordbar").progressbar({ 
+      value: BAR_MIN,
+      max: BAR_MAX,
+      complete: function(event, ui) {
+        mediaRecorder.stop();
+        $(this).hide();
+        $("#progressbar").progressbar("value", BAR_MIN);
+        $("#progressbar").show();        
+      }
+    });
+    $("#recordbar").hide();
   });
 
   function connect_to_chat_firebase(){
@@ -74,12 +86,17 @@
         fb_instance_stream.push({m:username+": " +$(this).val(), c: my_color});
         $(this).val("");
         scroll_to_bottom(0);
-      }
-      // '\'' key
-      if (event.which == REC_KEY) {
+      // Ctrl + '\' combo
+      } else if (event.ctrlKey && event.which == REC_KEY) {
         event.preventDefault();
-        var val = $("#progressbar").progressbar("value");
-        if ((val !== false) && (val < BAR_MAX)) $("#progressbar").progressbar("value", val + BAR_STEP);
+        $(this).val($(this).val() + "\\");
+      // '\'' key
+      } else if (event.which == REC_KEY) {
+        event.preventDefault();
+        var startVal = $("#progressbar").progressbar("value");
+        var recVal = $("#recordbar").progressbar("value");
+        if (startVal < BAR_MAX) $("#progressbar").progressbar("value", startVal + BAR_START_STEP);
+        else $("#recordbar").progressbar("value", recVal + BAR_RECORD_STEP);
       }
     });
 
@@ -88,10 +105,13 @@
       //console.log("KeyUP!");
       if (event.which == REC_KEY) {
         var val = $("#progressbar").progressbar("value");
-        if (val < BAR_MAX) {
-          $("#progressbar").progressbar("value", BAR_MIN);
-        } else {
+        if (val < BAR_MAX) $("#progressbar").progressbar("value", BAR_MIN);
+        else {
           mediaRecorder.stop();
+          $("#recordbar").hide();
+          $("#progressbar").progressbar("value", BAR_MIN);
+          $("#progressbar").show();
+          $("#recordbar").progressbar("value", BAR_MIN);
         }
       }
     });
@@ -157,14 +177,6 @@
       video.play();
       webcam_stream.appendChild(video);
 
-      // counter
-      var time = 0;
-      var second_counter = document.getElementById('second_counter');
-      var second_counter_update = setInterval(function(){
-        second_counter.innerHTML = time++;
-      }, 1000);
-
-      // now record stream in 5 seconds interval
       var video_container = document.getElementById('video_container');
       mediaRecorder = new MediaStreamRecorder(stream);
       var index = 1;

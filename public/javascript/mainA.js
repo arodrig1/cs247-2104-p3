@@ -13,6 +13,8 @@
   var fb_instance_requests;
   var my_color;
 
+  var VID_DELAY = 1000;
+
   $(document).ready(function(){
     connect_to_chat_firebase();
     connect_webcam();
@@ -107,7 +109,9 @@
     $("#conversation").append("<div class='msg' style='color:"+data.color+"'>" + data.name + " has requested reactions!" + "</div>");
 
     if (data.name != username) {
-      fb_instance_stream.push({ m: username + ": ", v: cur_video_blob, c: my_color});
+      setTimeout(function() {
+        mediaRecorder.start(VID_DURATION);
+      }, VID_DELAY);
     }
   }
 
@@ -143,14 +147,6 @@
       video.play();
       webcam_stream.appendChild(video);
 
-      // counter
-      var time = 0;
-      var second_counter = document.getElementById('second_counter');
-      var second_counter_update = setInterval(function(){
-        second_counter.innerHTML = time++;
-      },1000);
-
-      // now record stream in 5 seconds interval
       var video_container = document.getElementById('video_container');
       var mediaRecorder = new MediaStreamRecorder(stream);
       var index = 1;
@@ -162,19 +158,17 @@
       mediaRecorder.video_height = video_height/2;
 
       mediaRecorder.ondataavailable = function (blob) {
-          //console.log("new data available!");
           video_container.innerHTML = "";
 
           // convert data into base 64 blocks
           blob_to_base64(blob,function(b64_data){
             cur_video_blob = b64_data;
           });
+          
+          fb_instance_stream.push({ m: username + ": ", v: cur_video_blob, c: my_color});
       };
-      setInterval( function() {
-        mediaRecorder.stop();
-        mediaRecorder.start(3000);
-      }, 3000 );
-      console.log("connect to media stream!");
+      
+      console.log("Connected to media stream!");
     }
 
     // callback if there is an error when we try and get the video stream

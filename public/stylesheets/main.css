@@ -1,14 +1,18 @@
+html {
+  height: 100%;
+}
 body {
   margin: 10px;
   font: 15px "Lucida Grande", Helvetica, Arial, sans-serif;
+  height: 100%;
 }
 a {
   color: #00B7FF;
 }
 #webcam_stream {
-  position: absolute;
-  top: 10px;
-  right: 10px;
+  position: fixed;
+  bottom: 78px;
+  right: 30px;
   padding: 0;
 }
 #webcam_stream video {
@@ -21,15 +25,21 @@ a {
   color: white;
   z-index: 999;
 }
+#container {
+  height: 100%;
+  padding: 0px;
+  margin: 0px;
+}
 #conversation {
   padding: 10px 10px 80px;
   overflow-y: scroll;
-  height: 100%;
+  /*height: 80%;*/
 }
 #submission {
   position: fixed;
   bottom: 0;
   width: 100%;
+  height: 35px;
   right: 0;
   border-top: 2px solid #dcc;
   background: #fff;
@@ -52,4 +62,10 @@ a {
   color: white;
   text-align: center;
   padding: 50px 0;
+}
+
+#progressbar {
+  /*position: fixed;
+  bottom: 60px;
+  height: 15px;*/
 }
