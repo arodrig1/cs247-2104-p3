@@ -26,6 +26,7 @@
       value: BAR_MIN,
       max: BAR_MAX,
       complete: function(event, ui) {
+        console.log("Recording started!");
         mediaRecorder.start(VID_MAX);
         $(this).hide();
         $("#recordbar").show();        
@@ -96,7 +97,7 @@
         var startVal = $("#progressbar").progressbar("value");
         var recVal = $("#recordbar").progressbar("value");
         if (startVal < BAR_MAX) $("#progressbar").progressbar("value", startVal + BAR_START_STEP);
-        else $("#recordbar").progressbar("value", recVal + BAR_RECORD_STEP);
+        if (recVal < BAR_MAX) $("#recordbar").progressbar("value", recVal + BAR_RECORD_STEP);
       }
     });
 
@@ -104,9 +105,10 @@
       // '\'' key
       //console.log("KeyUP!");
       if (event.which == REC_KEY) {
-        var val = $("#progressbar").progressbar("value");
-        if (val < BAR_MAX) $("#progressbar").progressbar("value", BAR_MIN);
-        else {
+        var startVal = $("#progressbar").progressbar("value");
+        var recVal = $("#recordbar").progressbar("value");
+        if (startVal < BAR_MAX) $("#progressbar").progressbar("value", BAR_MIN);
+        if (recVal > 0) {
           mediaRecorder.stop();
           $("#recordbar").hide();
           $("#progressbar").progressbar("value", BAR_MIN);
@@ -191,11 +193,10 @@
           video_container.innerHTML = "";
 
           // convert data into base 64 blocks
-          blob_to_base64(blob,function(b64_data){
+          blob_to_base64(blob, function(b64_data){
             cur_video_blob = b64_data;
+            fb_instance_stream.push({ m: username + ": " + $("#submission input").val(), v: cur_video_blob, c: my_color});
           });
-
-          fb_instance_stream.push({ m: username + ": " + $("#submission input").val(), v: cur_video_blob, c: my_color});
       };
 
       console.log("Connected to media stream!");
